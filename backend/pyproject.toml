@@ -1,0 +1,18 @@
+[project]
+name = "llm-chat-backend"
+version = "0.1.0"
+description = "LLM chat backend"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.124.0",
+    "google-genai>=1.53.0",
+    "injector>=0.23.0",
+    "openai>=2.9.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "ruff>=0.14.8",
+]
