@@ -1,4 +1,4 @@
-from llm_chat_backend.domain.model.chat import Chat, ChatDetail, Message
+from llm_chat_backend.domain.model.chat import Chat, ChatDetail
 
 
 class ChatUsecase:
@@ -17,8 +17,7 @@ class ChatUsecase:
     def update_chat_title(self, chat_id: str, title: str) -> Chat:
         raise NotImplementedError()
 
-    def get_chat_detail(self, chat_id: str, limit: int = 10, offset: int = 0) -> ChatDetail:
-        raise NotImplementedError()
-
-    def inference(self, message: Message) -> str:
+    def get_chat_detail(
+        self, chat_id: str, limit: int = 10, offset: int = 0
+    ) -> ChatDetail:
         raise NotImplementedError()

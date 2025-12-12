@@ -16,12 +16,11 @@ class MessageRole(str, Enum):
     USER = "user"
     SYSTEM = "system"
     ASSISTANT = "assistant"
+    TOOL = "tool"
 
 
 class ContentType(str, Enum):
     TEXT = "text"
-    IMAGE = "image"
-    FILE = "file"
 
 
 class Content(BaseModel):

@@ -9,11 +9,11 @@ class IChatRepository(ABC):
         pass
 
     @abstractmethod
-    def get_chat_detail(self, chat_id: str, imit: int = 10, offset: int = 0) -> ChatDetail:
+    def list_chat_detail(self, chat_id: str) -> ChatDetail:
         pass
 
     @abstractmethod
-    def list_chats(self, user_id: str, limit: int = 10) -> list[Chat]:
+    def list_chats(self, user_id: str, limit: int = 10, offset: int = 0) -> list[Chat]:
         pass
 
     @abstractmethod
