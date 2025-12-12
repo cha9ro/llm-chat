@@ -25,7 +25,7 @@ class IChatRepository(ABC):
         pass
 
     @abstractmethod
-    def delete_chats(self, user_id: str, chat_id: str) -> None:
+    def delete_chats(self, user_id: str) -> None:
         pass
 
 
