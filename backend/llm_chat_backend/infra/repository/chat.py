@@ -4,6 +4,7 @@ import json
 from datetime import datetime
 from typing import Self
 
+from injector import inject
 from sqlalchemy import Column, DateTime, Text, delete
 from sqlmodel import Field, SQLModel, col, select
 
@@ -82,9 +83,9 @@ class MessageTable(SQLModel, table=True):
 class ChatRepository(IChatRepository):
     """SQLModel-powered persistence for chats and messages."""
 
-    def __init__(self) -> None:
-        self._connection = SQLiteConnection()
-        self._connection.create_all()
+    @inject
+    def __init__(self, connection: SQLiteConnection) -> None:
+        self._connection = connection
 
     def create_chat(self, chat: Chat) -> Chat:
         chat_row = ChatTable.from_model(chat)

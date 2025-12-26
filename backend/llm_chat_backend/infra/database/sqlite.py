@@ -4,11 +4,20 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Iterator
 
+from injector import inject
 from pydantic_settings import BaseSettings
 from sqlmodel import Session, SQLModel, create_engine
 
+from llm_chat_backend.config import ENV_FILE
+
 
 class SQLiteConfig(BaseSettings):
+    model_config = {
+        "env_prefix": "SQLITE_",
+        "env_file": ENV_FILE,
+        "env_file_encoding": "utf-8",
+    }
+
     db_path: str | Path = ".data/chat.db"
     echo: bool = False
 
@@ -16,6 +25,7 @@ class SQLiteConfig(BaseSettings):
 class SQLiteConnection:
     """Shared SQLModel engine/session factory for SQLite usage."""
 
+    @inject
     def __init__(self, config: SQLiteConfig | None = None) -> None:
         if config is None:
             config = SQLiteConfig()
