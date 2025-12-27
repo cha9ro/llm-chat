@@ -9,12 +9,17 @@ dependencies = [
     "google-genai>=1.53.0",
     "injector>=0.23.0",
     "openai>=2.9.0",
+    "pydantic>=2.12.5",
     "pydantic-settings>=2.12.0",
     "sqlmodel>=0.0.27",
 ]
 
 [dependency-groups]
-dev = ["pyright>=1.1.407", "pytest>=9.0.2", "ruff>=0.14.8"]
+dev = [
+    "pyright>=1.1.407",
+    "pytest>=9.0.2",
+    "ruff>=0.14.8",
+]
 
 [build-system]
 requires = ["hatchling"]

@@ -4,7 +4,8 @@ import json
 from datetime import datetime
 from typing import Self
 
-from sqlalchemy import Column, DateTime, Text, delete
+from injector import inject
+from sqlalchemy import Column, DateTime, ForeignKey, String, Text, delete
 from sqlmodel import Field, SQLModel, col, select
 
 from llm_chat_backend.domain.model.chat import (
@@ -51,7 +52,11 @@ class MessageTable(SQLModel, table=True):
     __tablename__ = "messages"  # pyright: ignore[reportAssignmentType]
 
     id: str = Field(primary_key=True, index=True)
-    chat_id: str = Field(foreign_key="chats.id", index=True)
+    chat_id: str = Field(
+        sa_column=Column(
+            String, ForeignKey("chats.id", ondelete="CASCADE"), nullable=False, index=True
+        )
+    )
     role: str = Field(index=True)
     content: str = Field(sa_column=Column(Text, nullable=False))
     created_at: str = Field(sa_column=Column(DateTime, nullable=False, index=True))
@@ -82,9 +87,9 @@ class MessageTable(SQLModel, table=True):
 class ChatRepository(IChatRepository):
     """SQLModel-powered persistence for chats and messages."""
 
-    def __init__(self) -> None:
-        self._connection = SQLiteConnection()
-        self._connection.create_all()
+    @inject
+    def __init__(self, connection: SQLiteConnection) -> None:
+        self._connection = connection
 
     def create_chat(self, chat: Chat) -> Chat:
         chat_row = ChatTable.from_model(chat)

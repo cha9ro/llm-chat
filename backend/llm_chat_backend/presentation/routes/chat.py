@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import StreamingResponse
+from injector import Injector
 from pydantic import BaseModel, Field
 
 from llm_chat_backend.application.chat import ChatUsecase
@@ -23,12 +24,23 @@ class ChatTitleUpdateRequest(BaseModel):
 
 
 router = APIRouter(prefix="/chats")
-injector = get_injector()
+
+
+def get_chat_usecase(
+    injector: Annotated[Injector, Depends(get_injector)],
+) -> ChatUsecase:
+    return injector.get(ChatUsecase)
+
+
+def get_response_usecase(
+    injector: Annotated[Injector, Depends(get_injector)],
+) -> ResponseUsecase:
+    return injector.get(ResponseUsecase)
 
 
 @router.get("")
 async def list_chats(
-    usecase: Annotated[ChatUsecase, Depends(lambda: injector.get(ChatUsecase))],
+    usecase: Annotated[ChatUsecase, Depends(get_chat_usecase)],
     user_id: str = Query(..., description="Owner whose chats are requested"),
     limit: int = Query(10, ge=1, le=100, description="Maximum number of chats"),
     offset: int = Query(0, ge=0, description="Number of chats to skip"),
@@ -44,7 +56,7 @@ async def list_chats(
 @router.post("", status_code=status.HTTP_201_CREATED)
 async def create_chat(
     request: ChatCreateRequest,
-    usecase: Annotated[ChatUsecase, Depends(lambda: injector.get(ChatUsecase))],
+    usecase: Annotated[ChatUsecase, Depends(get_chat_usecase)],
 ) -> Chat:
     return usecase.create_chat(user_id=request.user_id, title=request.title)
 
@@ -54,7 +66,7 @@ async def create_chat(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_chat(
-    usecase: Annotated[ChatUsecase, Depends(lambda: injector.get(ChatUsecase))],
+    usecase: Annotated[ChatUsecase, Depends(get_chat_usecase)],
     chat_id: str,
     user_id: str = Query(..., description="Owner whose chat should be deleted"),
 ) -> None:
@@ -72,7 +84,7 @@ async def delete_chat(
 
 @router.delete("", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_chats(
-    usecase: Annotated[ChatUsecase, Depends(lambda: injector.get(ChatUsecase))],
+    usecase: Annotated[ChatUsecase, Depends(get_chat_usecase)],
     user_id: str = Query(..., description="Owner whose chats should be deleted"),
 ) -> None:
     usecase.delete_chats(user_id=user_id)
@@ -80,7 +92,7 @@ async def delete_chats(
 
 @router.patch("/{chat_id}")
 async def update_chat_title(
-    usecase: Annotated[ChatUsecase, Depends(lambda: injector.get(ChatUsecase))],
+    usecase: Annotated[ChatUsecase, Depends(get_chat_usecase)],
     chat_id: str,
     request: ChatTitleUpdateRequest,
 ) -> Chat:
@@ -100,7 +112,7 @@ async def update_chat_title(
 
 @router.get("/{chat_id}")
 async def get_chat_detail(
-    usecase: Annotated[ChatUsecase, Depends(lambda: injector.get(ChatUsecase))],
+    usecase: Annotated[ChatUsecase, Depends(get_chat_usecase)],
     chat_id: str,
     user_id: str = Query(..., description="Owner whose chat should be retrieved"),
     limit: int = Query(
@@ -129,6 +141,6 @@ async def get_chat_detail(
 @router.post("/{chat_id}/messages")
 async def response(
     chat_id: str,
-    usecase: Annotated[ResponseUsecase, Depends(lambda: injector.get(ResponseUsecase))],
+    usecase: Annotated[ResponseUsecase, Depends(get_response_usecase)],
 ) -> StreamingResponse:
     raise NotImplementedError()
