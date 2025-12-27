@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Self
 
 from injector import inject
-from sqlalchemy import Column, DateTime, Text, delete
+from sqlalchemy import Column, DateTime, ForeignKey, String, Text, delete
 from sqlmodel import Field, SQLModel, col, select
 
 from llm_chat_backend.domain.model.chat import (
@@ -52,7 +52,11 @@ class MessageTable(SQLModel, table=True):
     __tablename__ = "messages"  # pyright: ignore[reportAssignmentType]
 
     id: str = Field(primary_key=True, index=True)
-    chat_id: str = Field(foreign_key="chats.id", index=True)
+    chat_id: str = Field(
+        sa_column=Column(
+            String, ForeignKey("chats.id", ondelete="CASCADE"), nullable=False, index=True
+        )
+    )
     role: str = Field(index=True)
     content: str = Field(sa_column=Column(Text, nullable=False))
     created_at: str = Field(sa_column=Column(DateTime, nullable=False, index=True))
